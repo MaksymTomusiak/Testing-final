@@ -66,14 +66,16 @@ jobs:
         run: |
           echo "Waiting for API to become ready..."
           for i in $(seq 1 30); do
-            if curl -sf http://localhost:5067/api/gardens > /dev/null 2>&1; then
+            # Check gardens endpoint (case-insensitive curl usually works)
+            if curl -sf http://localhost:5067/api/Gardens > /dev/null 2>&1; then
               echo "API is ready!"
               exit 0
             fi
             echo "  attempt $i/30..."
             sleep 2
           done
-          echo "API failed to become ready"
+          echo "API failed to become ready. Showing logs:"
+          kill $(jobs -p) || true
           exit 1
 
       - name: Determine test type

@@ -45,16 +45,25 @@ public class DockerApiFixture : IAsyncLifetime
         }
         var rootDir = currentDir?.FullName ?? throw new Exception("Could not find solution root directory");
         
-        _apiImage = new ImageFromDockerfileBuilder()
-            .WithDockerfileDirectory(rootDir)
-            .WithDockerfile("src/Api/Dockerfile")
-            .WithName("garden-api-test:latest")
-            .WithCleanUp(true)
-            .Build();
-        await _apiImage.CreateAsync();
+        string apiImageName;
+        if (Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true")
+        {
+            apiImageName = "garden-api-test:latest";
+        }
+        else
+        {
+            _apiImage = new ImageFromDockerfileBuilder()
+                .WithDockerfileDirectory(Path.Combine(rootDir, "src"))
+                .WithDockerfile("Api/Dockerfile")
+                .WithName("garden-api-test:latest")
+                .WithCleanUp(true)
+                .Build();
+            await _apiImage.CreateAsync();
+            apiImageName = _apiImage.FullName;
+        }
 
         _apiContainer = new ContainerBuilder()
-            .WithImage(_apiImage.FullName)
+            .WithImage(apiImageName)
             .WithNetwork(_network)
             .WithNetworkAliases("api")
             .WithPortBinding(8080, true)

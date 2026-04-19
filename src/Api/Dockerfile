@@ -3,19 +3,19 @@ WORKDIR /app
 EXPOSE 8080
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
-WORKDIR /source
+WORKDIR /src
 
 # Copy csproj files for restore
-COPY ["src/Api/Api.csproj", "src/Api/"]
-COPY ["src/Infrastructure/Infrastructure.csproj", "src/Infrastructure/"]
-COPY ["src/Application/Application.csproj", "src/Application/"]
-COPY ["src/Domain/Domain.csproj", "src/Domain/"]
+COPY ["Api/Api.csproj", "Api/"]
+COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
+COPY ["Application/Application.csproj", "Application/"]
+COPY ["Domain/Domain.csproj", "Domain/"]
 
-RUN dotnet restore "src/Api/Api.csproj"
+RUN dotnet restore "Api/Api.csproj"
 
 # Copy everything else and build
 COPY . .
-WORKDIR "/source/src/Api"
+WORKDIR "/src/Api"
 RUN dotnet build "Api.csproj" -c Release -o /app/build
 
 FROM build AS publish
