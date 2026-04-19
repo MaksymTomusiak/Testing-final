@@ -48,4 +48,4 @@ app.MapControllers();
 
 app.Run();
 
-public partial class Program { } // For WebApplicationFactory
+public partial class Program { }
