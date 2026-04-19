@@ -1,0 +1,96 @@
+name: k6 Performance Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "src/Api/**"
+      - "tests/Tests.K6/**"
+
+  workflow_dispatch:
+    inputs:
+      test-type:
+        description: "k6 test type to run"
+        required: true
+        default: "smoke"
+        type: choice
+        options:
+          - smoke
+          - load_test
+          - stress
+
+jobs:
+  k6:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: garden_planner
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Setup k6
+        uses: grafana/setup-k6-action@v1
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore
+
+      - name: Start API
+        env:
+          ASPNETCORE_URLS: http://localhost:5067
+          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=garden_planner;Username=postgres;Password=postgres"
+        run: dotnet run --project src/Api --no-build &
+
+      - name: Wait for API readiness
+        run: |
+          echo "Waiting for API to become ready..."
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:5067/api/gardens > /dev/null 2>&1; then
+              echo "API is ready!"
+              exit 0
+            fi
+            echo "  attempt $i/30..."
+            sleep 2
+          done
+          echo "API failed to become ready"
+          exit 1
+
+      - name: Determine test type
+        id: test-type
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "type=${{ inputs.test-type }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "type=smoke" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run k6 ${{ steps.test-type.outputs.type }} test
+        run: k6 run -e BASE_URL=http://localhost:5067 tests/Tests.K6/${{ steps.test-type.outputs.type }}.js --summary-export=results.json
+
+      - name: Upload k6 results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-${{ steps.test-type.outputs.type }}-results
+          path: results.json

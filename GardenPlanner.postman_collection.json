@@ -1,0 +1,258 @@
+{
+	"info": {
+		"_postman_id": "8f8c7e9a-4d2b-4e1a-9f8c-7e9a4d2b4e1a",
+		"name": "Garden Planner API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Gardens",
+			"item": [
+				{
+					"name": "Get All Gardens",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/gardens",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"gardens"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Garden",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"My Home Garden\",\n    \"location\": \"Backyard\",\n    \"sizeSquareMeters\": 50,\n    \"soilType\": 2,\n    \"sunExposure\": 0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/gardens",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"gardens"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Garden By Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/gardens/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"gardens",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Plant in Garden",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"plantId\": 1,\n    \"plantedDate\": \"2025-04-01T00:00:00Z\",\n    \"notes\": \"Initial planting\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/gardens/1/plantings",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"gardens",
+								"1",
+								"plantings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Watering Schedule",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/gardens/1/watering-schedule",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"gardens",
+								"1",
+								"watering-schedule"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Plants",
+			"item": [
+				{
+					"name": "Get All Plants",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/plants?sunRequirement=0&season=0",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"plants"
+							],
+							"query": [
+								{
+									"key": "sunRequirement",
+									"value": "0",
+									"description": "Optional: Full/Partial/Shade (0/1/2)"
+								},
+								{
+									"key": "season",
+									"value": "0",
+									"description": "Optional: Spring/Summer/Fall/Winter (0/1/2/3)"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Plant",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Tomato\",\n    \"species\": \"Solanum lycopersicum\",\n    \"waterFrequencyDays\": 3,\n    \"sunRequirement\": 0,\n    \"growthDurationDays\": 80,\n    \"plantingSeason\": 0,\n    \"spaceRequiredSquareMeters\": 0.5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/plants",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"plants"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Plantings",
+			"item": [
+				{
+					"name": "Update Planting Status",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"status\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/plantings/1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"plantings",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Ready to Harvest",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/plantings/ready-to-harvest?pageNumber=1&pageSize=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"plantings",
+								"ready-to-harvest"
+							],
+							"query": [
+								{
+									"key": "pageNumber",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5000",
+			"type": "string"
+		}
+	]
+}
