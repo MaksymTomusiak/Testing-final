@@ -1,0 +1,14 @@
+**/bin/
+**/obj/
+.git/
+.vs/
+.idea/
+*.user
+*.suo
+test_results.txt
+*.html
+**/TestResults/
+tests/
+.github/
+docker-compose.yml
+GardenPlanner.postman_collection.json
