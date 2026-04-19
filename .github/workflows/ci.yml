@@ -23,6 +23,9 @@ jobs:
       - name: Build
         run: dotnet build --no-restore
 
+      - name: Build API Docker Image
+        run: docker build -t garden-api-test:latest -f src/Api/Dockerfile src/
+
       - name: Test
         # Testcontainers will handle starting Postgres and API containers
         run: dotnet test --no-build --verbosity normal
