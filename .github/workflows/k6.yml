@@ -60,13 +60,12 @@ jobs:
         env:
           ASPNETCORE_URLS: http://localhost:5067
           ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=garden_planner;Username=postgres;Password=postgres"
-        run: dotnet run --project src/Api --no-build &
+        run: dotnet run --project src/Api --no-build > api.log 2>&1 &
 
       - name: Wait for API readiness
         run: |
           echo "Waiting for API to become ready..."
           for i in $(seq 1 30); do
-            # Check gardens endpoint (case-insensitive curl usually works)
             if curl -sf http://localhost:5067/api/Gardens > /dev/null 2>&1; then
               echo "API is ready!"
               exit 0
@@ -74,8 +73,8 @@ jobs:
             echo "  attempt $i/30..."
             sleep 2
           done
-          echo "API failed to become ready. Showing logs:"
-          kill $(jobs -p) || true
+          echo "API failed to become ready. API Logs:"
+          cat api.log
           exit 1
 
       - name: Determine test type
