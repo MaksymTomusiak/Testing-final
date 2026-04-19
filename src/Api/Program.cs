@@ -35,7 +35,6 @@ using (var scope = app.Services.CreateScope())
     await DbSeeder.SeedAsync(context);
 }
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
