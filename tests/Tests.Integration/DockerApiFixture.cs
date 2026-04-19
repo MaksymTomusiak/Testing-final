@@ -46,8 +46,8 @@ public class DockerApiFixture : IAsyncLifetime
         var rootDir = currentDir?.FullName ?? throw new Exception("Could not find solution root directory");
         
         _apiImage = new ImageFromDockerfileBuilder()
-            .WithDockerfileDirectory(Path.Combine(rootDir, "src"))
-            .WithDockerfile("Api/Dockerfile")
+            .WithDockerfileDirectory(rootDir)
+            .WithDockerfile("src/Api/Dockerfile")
             .WithName("garden-api-test:latest")
             .WithCleanUp(true)
             .Build();
