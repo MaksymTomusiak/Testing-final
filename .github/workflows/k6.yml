@@ -9,16 +9,6 @@ on:
       - "tests/Tests.K6/**"
 
   workflow_dispatch:
-    inputs:
-      test-type:
-        description: "k6 test type to run"
-        required: true
-        default: "smoke"
-        type: choice
-        options:
-          - smoke
-          - load_test
-          - stress
 
 jobs:
   k6:
@@ -77,21 +67,20 @@ jobs:
           cat api.log
           exit 1
 
-      - name: Determine test type
-        id: test-type
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "type=${{ inputs.test-type }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "type=smoke" >> "$GITHUB_OUTPUT"
-          fi
+      - name: Run k6 Smoke Test
+        run: k6 run -e BASE_URL=http://localhost:5067 tests/Tests.K6/smoke.js --summary-export=smoke_results.json
 
-      - name: Run k6 ${{ steps.test-type.outputs.type }} test
-        run: k6 run -e BASE_URL=http://localhost:5067 tests/Tests.K6/${{ steps.test-type.outputs.type }}.js --summary-export=results.json
+      - name: Run k6 Load Test
+        run: k6 run -e BASE_URL=http://localhost:5067 tests/Tests.K6/load_test.js --summary-export=load_results.json
+
+      - name: Run k6 Stress Test
+        run: k6 run -e BASE_URL=http://localhost:5067 tests/Tests.K6/stress.js --summary-export=stress_results.json
 
       - name: Upload k6 results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: k6-${{ steps.test-type.outputs.type }}-results
-          path: results.json
+          name: k6-performance-results
+          path: |
+            *.json
+            tests/Tests.K6/*.html
